@@ -155,63 +155,6 @@ def print_empty_board(rows: int, cols: int) -> None:
     for _ in range(rows):
         print(*line)
 
-
-# def generate_board(rows: int, cols: int, num_mines: int, first_coordniate: Tuple[int, int]) -> list[list[Cell]]:
-#     total_cells = rows * cols
-
-
-#     board = []
-#     for i in range(rows):
-#         row = []
-#         for j in range(cols):
-#             row.append(Cell())
-#         board.append(row)
-
-#     # Когда человек вводит например 5 строку и 4 столбец, то для питона это была 6 строка и 5 столбец, так как индекс с 0
-#     first_human_row, first_human_col = first_coordniate
-#     first_row, first_col = first_human_row - 1, first_human_col - 1
-
-#     if not (0 <= first_row < rows and 0 <= first_col < cols):
-#         raise ValueError('Координаты первой клетки не в границах поля')
-
-#     safe_positions = set()
-#     for neighbour_row in [first_row - 1, first_row, first_row + 1]:
-#         for neighbour_col in [first_col - 1, first_col, first_col + 1]:
-
-#             if neighbour_row >= 0 and neighbour_row < rows and \
-#                     neighbour_col >= 0 and neighbour_col < cols:
-#                 safe_positions.add((neighbour_row, neighbour_col))
-
-#     positions = [(row, col) for row in range(rows) for col in range(cols) if (row, col) not in safe_positions]
-
-#     if num_mines > total_cells - len(safe_positions):
-#         raise ValueError('Колиечство мин не может быть больше количества ячеек поля')
-
-#     mine_positions = set(random.sample(positions, num_mines))
-
-#     for row, col in mine_positions:
-#         cell = board[row][col]
-#         cell.is_mine = True
-
-#     calculate_adjacent_mines(board)
-
-#     return board
-
-# def print_open_board(board: list[list[Cell]]) -> None:
-#     for line in board:
-#         for cell in line:
-#             print(cell.revealed(), end='')
-#         print()
-
-# def create_empty_board(rows: int, cols: int) -> list[list[Cell]]:
-#     board = []
-#     for i in range(rows):
-#         line = []
-#         for g in range(cols):
-#             line.append(Cell())
-#         board.append(line)
-#     return board
-
 if __name__ == '__main__':
     board = generate_board(6,8,5,(4,5))
     print_board(board)

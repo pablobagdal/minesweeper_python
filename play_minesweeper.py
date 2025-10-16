@@ -14,6 +14,8 @@ def input_values():
     global BOARD
     global MINES_REMAIN
     global SAFE_CELLS_REMAIN
+    global TOTAL_FLAGS
+    global FLAGS_REMAIN
     # TODO validation of values
     ROWS = int(input('Write number of rows (2 - 15): '))
     COLS = int(input('Write number of cols (2 - 15): '))
@@ -22,6 +24,8 @@ def input_values():
     MINES_REMAIN = TOTAL_MINES
     SAFE_CELLS_REMAIN = TOTAL_SAFE_CELLS
     BOARD = create_empty_board(ROWS, COLS)
+    TOTAL_FLAGS = TOTAL_MINES
+    FLAGS_REMAIN = TOTAL_FLAGS
 
 def all_commands() -> List[str]:
     commands = []
@@ -64,22 +68,34 @@ def decrease_cell_counters(cell: Cell):
     global MINES_REMAIN
     global SAFE_CELLS_REMAIN
 
-    if Cell.is_mine:
+    if cell.is_mine:
         MINES_REMAIN -= 1
     else:
         SAFE_CELLS_REMAIN -= 1
 
+def unflag_cell(row: int, col: int):
+    global FLAGS_REMAIN
+
+    if BOARD[row][col].is_flagged:
+        BOARD[row][col].is_flagged = False
+        FLAGS_REMAIN += 1
+
 def try_unreveal_around(row, col, recursive = True) -> None:
     cell = BOARD[row][col]
-    next_cells = []
+    queue = []
     if cell.adjacent_mines == 0:
         count = 0
         neighbors = neighbors_of(BOARD, (row, col))
-        for neighbor in neighbors:
-            if neighbor.is_mine:
-                continue
-            if neighbor.adjacent_mines == 0 and recursive:
-                try_unreveal_around()
+        for x, y in neighbors:
+            if not BOARD[x][y].is_revealed:
+                queue.append((x, y))
+                if BOARD[x][y].is_flagged:
+                    unflag_cell(x, y)
+                BOARD[x][y].is_revealed = True
+    for x, y in queue:
+        try_unreveal_around(x, y)
+        
+
 
 def open_cell(row, col):
     global BOARD
@@ -103,10 +119,20 @@ def open_cell(row, col):
     # если рядом с выбранной клеткой рядом 0 бомб - открываются все соседние клетки и рекурсивно открываются соседи
     # if board[row - 1][col - 1].adjacent_mines == 0:
 
-def flag_cell(row, col):
-    #TODO предусмотреть ввод некорректных чисел
-    #TODO учесть лимит флагов
-    pass
+def flag_cell(row, col) -> None:
+    global FLAGS_REMAIN
+
+    cell = BOARD[row][col]
+
+    if cell.is_revealed:
+        print('You already opened the cell, you can\'t flag it')
+    elif cell.is_flagged:
+        unflag_cell(row, col)
+    elif FLAGS_REMAIN == 0:
+        print('You don\'t have flags anymore. To put new one unflag some cell')
+    else:
+        cell.is_flagged = True
+        FLAGS_REMAIN -= 1
 
 def do_command(command, row, col):
     if command in COMMANDS['open']:
@@ -116,7 +142,12 @@ def do_command(command, row, col):
     else:
         print('undefined command')
 
-    
+def print_stats():
+    print(f'Total cells: {TOTAL_SAFE_CELLS + TOTAL_MINES}')
+    print(f'Safe cells remain: {SAFE_CELLS_REMAIN} / {TOTAL_SAFE_CELLS}')
+    print(f'Mines: {TOTAL_MINES}')
+    print(f'Flags remain: {FLAGS_REMAIN} / {TOTAL_FLAGS}')
+
 def main():
     global BOARD
     
@@ -127,7 +158,9 @@ def main():
 
     # main game board
     while MINES_REMAIN == TOTAL_MINES and SAFE_CELLS_REMAIN != 0:
+        print_stats()
         print_board(BOARD)
+        # print_board(BOARD, show_mines=True)
         command, row, col = input_command()
         do_command(command, row, col)
     

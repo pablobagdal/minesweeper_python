@@ -86,10 +86,9 @@ def count_neighbors(board: List[List[Cell]], coord: tuple[int, int]) -> int:
 def generate_board(rows: int, cols: int, num_mines: int, first_click_coords: tuple[int,int]) -> list[list[Cell]]:
     board = create_empty_board(rows, cols)
 
-    safe_cells = {first_click_coords}
-    print(neighbors_of(board, first_click_coords))
-    # for cell in neighbors_of(board, first_click_coords):
-    #     safe_cells.add(cell)
+    safe_coords = {first_click_coords}
+    for coord in neighbors_of(board, first_click_coords):
+        safe_coords.add(coord)
 
     # fill board with mines & adjacent_mines to its neighbors
     for _ in range(num_mines):
@@ -98,7 +97,7 @@ def generate_board(rows: int, cols: int, num_mines: int, first_click_coords: tup
             r = randint(0, rows - 1)
             c = randint(0, cols - 1)
             # if (r, c) == first_click_coords or board[r][c].is_mine:
-            if (r, c) in safe_cells or board[r][c].is_mine:
+            if (r, c) in safe_coords or board[r][c].is_mine:
                 continue
             found_place = True
             board[r][c].is_mine = True
@@ -138,22 +137,10 @@ def print_board(board, opened: bool = False, show_mines: bool = False):
         print(*line, sep='')
     print()
 
-def print_with_open_mines(board):
-    pass
-
-
 def print_game_options():
     print('Game options')
     print('- `open <row> <col>` (или `o <row> <col>`): Open cell.')
     print('- `flag <row> <col>` (или `f <row> <col>`): set/unset flag.')
-
-def print_empty_board(rows: int, cols: int) -> None:
-    c = Cell()
-    line = []
-    for _ in range(cols):
-        line.append(c)
-    for _ in range(rows):
-        print(*line)
 
 if __name__ == '__main__':
     board = generate_board(6,8,5,(4,5))

@@ -1,7 +1,7 @@
 
 COMMANDS = {
     'flag': [ 'f', 'flag'], 
-    'open': ['o', 'open']
+    'open': ['o', 'open', '0']
     }
 BOARD = []
 ROWS = 0

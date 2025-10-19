@@ -165,7 +165,7 @@ def main():
         do_command(command, row, col)
     
     
-    print_board(board, show_mines=True)
+    print_board(BOARD, show_mines=True)
     if MINES_REMAIN < TOTAL_MINES:
         print('Game over :(')
     else:
